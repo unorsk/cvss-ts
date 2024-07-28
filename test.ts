@@ -47,14 +47,31 @@ const testAssertions = [
   {cvss: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/V:C", score: 8.7},
 ]
 
+function toRating(score: number) {
+  if (score <= 0) {
+    return "None"
+  } else if (score < 4) {
+    return "Low"
+  } else if (score < 7) {
+    return "Medium"
+  } else if (score < 9) {
+    return "High"
+  } else {
+    return "Critical"
+  }
+}
+
 testAssertions.forEach((e) => {
   const cvss = parseCVSS40(e.cvss)
   
+  // console.log(`, ("${e.cvss}",                  ${e.score}, CVSS.${toRating(e.score)})`);
+
   const score = cvss40score(macroVector(cvss), cvss)
   if (score != e.score) {
       console.log(`${score}  expected: ${e.score} ${e.cvss}`)
   }
 })
 
-const cvss = parseCVSS40("CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N")
-console.log(cvss40score(macroVector(cvss), cvss))
+// const cvss = parseCVSS40("CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N")
+// const cvss = parseCVSS40("CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:P/CR:L/IR:H/AR:L/MAV:L/MAC:H/MAT:N/MPR:N/MUI:N/MVC:N/MVI:H/MVA:L/MSC:N/MSI:S/MSA:L")
+// console.log(cvss40score(macroVector(cvss), cvss))

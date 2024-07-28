@@ -125,6 +125,8 @@ export function cvss40score (macroVectorResult: number[], cvss: CVSS40) {
 
   const [eq1, eq2, eq3, eq4, eq5, eq6] = macroVectorResult
 
+//   const a = lookup.get([eq1 + 1, eq2, eq3, eq4, eq5, eq6].join(""));
+
   const next_lower_macro = [
     lookup[[eq1 + 1, eq2, eq3, eq4, eq5, eq6].join("")],
     lookup[[eq1, eq2 + 1, eq3, eq4, eq5, eq6].join("")],
@@ -154,10 +156,10 @@ export function cvss40score (macroVectorResult: number[], cvss: CVSS40) {
   return Math.round(value * 10) / 10
 }
 
-function calcMeanDistance(value: number, next_lower_macro: number[], macroVectorResult: number[], current_severities: number[], eq6: number) {
+function calcMeanDistance(value: number, next_lower_macro: number[], macroVectorResult: number[], current_severities: number[], eq6: number): number {
     let n_existing_lower = 0
 
-    const normalized_severity = [ 0, 0, 0, 0, 0 ].map((norm_serv, i) => {
+    const normalized_severities = [ 0, 0, 0, 0, 0 ].map((norm_serv, i) => {
         const available_distance_eqi = value - next_lower_macro[i]
         if (!isNaN(available_distance_eqi)) {
             n_existing_lower = n_existing_lower + 1
@@ -172,11 +174,11 @@ function calcMeanDistance(value: number, next_lower_macro: number[], macroVector
         return norm_serv
     })
 
-    const mean_distance = n_existing_lower == 0 ? 0 : normalized_severity.reduce((s, c) => s+c, 0) / n_existing_lower
+    const mean_distance = n_existing_lower == 0 ? 0 : normalized_severities.reduce((s, c) => s+c, 0) / n_existing_lower
     return mean_distance
   }
 
-function getSeverities(cvss: CVSS40, max_vectors: string[] ) {
+function getSeverities(cvss: CVSS40, max_vectors: string[]): number[] {
     // Find the max vector to use i.e. one in the combination of all the highests
     // that is greater or equal (severity distance) than the to-be scored vector.
     let severity_distance_AV = 0
@@ -256,25 +258,15 @@ function calc_score_eq3eq6_next_lower_macro(eq: number[]): number {
         const score_eq3eq6_next_lower_macro_left = lookup[eq3eq6_next_lower_macro_left]
         const score_eq3eq6_next_lower_macro_right = lookup[eq3eq6_next_lower_macro_right]
 
-        if (score_eq3eq6_next_lower_macro_left > score_eq3eq6_next_lower_macro_right) {
-            // score_eq3eq6_next_lower_macro = score_eq3eq6_next_lower_macro_left
-            return score_eq3eq6_next_lower_macro_left
-        } else {
-            // score_eq3eq6_next_lower_macro = score_eq3eq6_next_lower_macro_right
-            return score_eq3eq6_next_lower_macro_right
-        }
-
+        return Math.max(score_eq3eq6_next_lower_macro_left, score_eq3eq6_next_lower_macro_right)
     } else {
         // 21 --> 32 (do not exist)
         eq3eq6_next_lower_macro = [eq1, eq2, eq3 + 1, eq4, eq5, eq6 + 1]
     }
 
-    if (!(eq3 == 0 && eq6 == 0)) {
-        // score_eq3eq6_next_lower_macro = lookup[eq3eq6_next_lower_macro.join("")]
-        return lookup[eq3eq6_next_lower_macro.join("")]
-    }
+    return lookup[eq3eq6_next_lower_macro.join("")]
 
-    return 0; //TODO: well, otherwise it's undefined...
+    // return 0; //TODO: well, otherwise it's undefined...
 }
 
 function extractValueMetric(metric: string, cvssStr: string) {

@@ -1,7 +1,7 @@
 // Copyright FIRST, Red Hat, and contributors
 // SPDX-License-Identifier: BSD-2-Clause
 interface LookupType {
-  [key: string]: number;
+  [key: string]: number | undefined;
 };
 
 export const lookup: LookupType = {
