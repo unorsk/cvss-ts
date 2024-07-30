@@ -1,6 +1,12 @@
-## CVSS40 implementation in TypeScript
+## CVSS implementation in TypeScript
 
  It is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
+
+Supported versions
+- [ ] CVSS20
+- [ ] CVSS30
+- [ ] CVSS31
+- [x] CVSS40
 
 ### Basic CVSS anatomy
 
