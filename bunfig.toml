@@ -1,0 +1,3 @@
+[build]
+entry = "src/index.ts" # Adjust this to your main TypeScript file
+outdir = "dist"

@@ -2,6 +2,20 @@
 
  It is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
 
+
+### Building the project
+
+Pre-requisites:
+- Node.js
+- Bun
+
+Build the project by running the following commands
+```
+npm install
+npm run build
+```
+
+
 Supported versions
 - [ ] CVSS20
 - [ ] CVSS30

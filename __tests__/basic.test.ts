@@ -1,4 +1,4 @@
-import { cvss40score, macroVector, parseCVSS40 } from "../src/cvss"
+import { cvss40score, parseCVSS40 } from "../src/cvss/cvss"
 
 const testAssertions = [
   {cvss: "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N", score: 7.3},
@@ -47,35 +47,30 @@ const testAssertions = [
   {cvss: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N/V:C", score: 8.7},
 ]
 
-function toRating(score: number) {
-  if (score <= 0) {
-    return "None"
-  } else if (score < 4) {
-    return "Low"
-  } else if (score < 7) {
-    return "Medium"
-  } else if (score < 9) {
-    return "High"
-  } else {
-    return "Critical"
-  }
-}
+const invalidTestAssertions = [
+  { cvss: "CVSS:4.0/AV:X/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H" }, // Invalid value 'X' for AV
+  { cvss: "CVSS:4.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A" },   // Missing value for A
+  { cvss: "CVSS:2.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A" },   // Wrong CVSS version
+  // Add more invalid test cases as needed
+];
 
-testAssertions.forEach((e) => {
-  const cvss = parseCVSS40(e.cvss)
-  
-  // console.log(`, ("${e.cvss}",                  ${e.score}, CVSS.${toRating(e.score)})`);
 
-  try {
-    const score = cvss40score(macroVector(cvss), cvss)
-    if (score != e.score) {
-        console.log(`${score}  expected: ${e.score} ${e.cvss}`)
-    }
-  } catch (e) {
-    console.log(e)
-  }
-})
+describe('CVSS 4.0 Score Tests', () => {
+  testAssertions.forEach((e) => {
+    it(`should calculate the correct score for ${e.cvss}`, () => {
+      const cvss = parseCVSS40(e.cvss);
 
-// const cvss = parseCVSS40("CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N")
-// const cvss = parseCVSS40("CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:P/CR:L/IR:H/AR:L/MAV:L/MAC:H/MAT:N/MPR:N/MUI:N/MVC:N/MVI:H/MVA:L/MSC:N/MSI:S/MSA:L")
-// console.log(cvss40score(macroVector(cvss), cvss))
+      try {
+        const score = cvss40score(cvss);
+        expect(score).toBe(e.score);
+      } catch (error) {
+        fail(`Error calculating score for ${e.cvss}: ${error}`);
+      }
+    });
+  });
+  invalidTestAssertions.forEach((e) => {
+    it(`should fail to parse invalid CVSS string ${e.cvss}`, () => {
+      expect(() => parseCVSS40(e.cvss)).toThrow();
+    });
+  });
+});
