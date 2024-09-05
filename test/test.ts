@@ -1,4 +1,4 @@
-import { cvss40score, macroVector, parseCVSS40 } from "./cvss"
+import { cvss40score, macroVector, parseCVSS40 } from "../src/cvss"
 
 const testAssertions = [
   {cvss: "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N", score: 7.3},
@@ -66,9 +66,13 @@ testAssertions.forEach((e) => {
   
   // console.log(`, ("${e.cvss}",                  ${e.score}, CVSS.${toRating(e.score)})`);
 
-  const score = cvss40score(macroVector(cvss), cvss)
-  if (score != e.score) {
-      console.log(`${score}  expected: ${e.score} ${e.cvss}`)
+  try {
+    const score = cvss40score(macroVector(cvss), cvss)
+    if (score != e.score) {
+        console.log(`${score}  expected: ${e.score} ${e.cvss}`)
+    }
+  } catch (e) {
+    console.log(e)
   }
 })
 

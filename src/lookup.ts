@@ -4,7 +4,78 @@ interface LookupType {
   [key: string]: number | undefined;
 };
 
-export const lookup: LookupType = {
+export function lookup(values: number[]): number | undefined {
+  return lookupTable[values.join("")]
+}
+
+export const levels = {
+  AV: { N: 0.0, A: 0.1, L: 0.2, P: 0.3 },
+  AC: { L: 0.0, H: 0.1 },
+  AT: { N: 0.0, P: 0.1 },
+  PR: { N: 0.0, L: 0.1, H: 0.2 },
+  UI: { N: 0.0, P: 0.1, A: 0.2 },
+  VC: { H: 0.0, L: 0.1, N: 0.2 },
+  VI: { H: 0.0, L: 0.1, N: 0.2 },
+  VA: { H: 0.0, L: 0.1, N: 0.2 },
+  SC: { H: 0.1, L: 0.2, N: 0.3 },
+  SI: { S: 0.0, H: 0.1, L: 0.2, N: 0.3 },
+  SA: { S: 0.0, H: 0.1, L: 0.2, N: 0.3 },
+  CR: { X: 0.0, H: 0.0, M: 0.1, L: 0.2 },
+  IR: { X: 0.0, H: 0.0, M: 0.1, L: 0.2 },
+  AR: { X: 0.0, H: 0.0, M: 0.1, L: 0.2 },
+}
+
+export const maxComposedEQ3: string[][][] = [
+	[ ["VC:H/VI:H/VA:H/CR:H/IR:H/AR:H/"], ["VC:H/VI:H/VA:L/CR:M/IR:M/AR:H/", "VC:H/VI:H/VA:H/CR:M/IR:M/AR:M/"] ],
+	[ ["VC:L/VI:H/VA:H/CR:H/IR:H/AR:H/", "VC:H/VI:L/VA:H/CR:H/IR:H/AR:H/"], ["VC:L/VI:H/VA:L/CR:H/IR:M/AR:H/", "VC:L/VI:H/VA:H/CR:H/IR:M/AR:M/", "VC:H/VI:L/VA:H/CR:M/IR:H/AR:M/", "VC:H/VI:L/VA:L/CR:M/IR:H/AR:H/", "VC:L/VI:L/VA:H/CR:H/IR:H/AR:M/"] ],
+	[ [], ["VC:L/VI:L/VA:L/CR:H/IR:H/AR:H/"] ],
+]
+
+export const maxSeverityeq3eq6: {[key in number]: number}[] = [
+	{ 0: 7, 1: 6 },
+	{ 0: 8, 1: 8 },
+	{ 1: 10 }
+]
+
+export const maxSeverityData: number[][] = [
+	[ 1, 4, 5 ],
+	[ 1, 2 ],
+	[],// stub for 3
+	[ 6, 5, 4 ],
+	[ 1, 1, 1 ],
+]
+
+
+export const maxComposed: string[][][] = [
+	// EQ1
+	[
+		 ["AV:N/PR:N/UI:N/"],
+		 ["AV:A/PR:N/UI:N/", "AV:N/PR:L/UI:N/", "AV:N/PR:N/UI:P/"],
+		 ["AV:P/PR:N/UI:N/", "AV:A/PR:L/UI:P/"]
+	],
+	// EQ2
+	[
+		 ["AC:L/AT:N/"],
+		 ["AC:H/AT:N/", "AC:L/AT:P/"]
+	],
+	[],// EQ3+EQ6
+
+	// EQ4
+	[
+		["SC:H/SI:S/SA:S/"],
+		["SC:H/SI:H/SA:H/"],
+		["SC:L/SI:L/SA:L/"]
+
+	],
+	// EQ5
+	[
+		["E:A/"],
+		["E:P/"],
+		["E:U/"],
+	],
+]
+
+const lookupTable: LookupType = {
   "000000": 10,
   "000001": 9.9,
   "000010": 9.8,

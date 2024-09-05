@@ -15,7 +15,7 @@
     "skipLibCheck": true // Skip type checking of all declaration files
   },
   "include": [
-    "./" // Specify directories to include
+    "./src" // Specify directories to include
   ],
   "exclude": [
     "node_modules" // Specify directories to exclude
