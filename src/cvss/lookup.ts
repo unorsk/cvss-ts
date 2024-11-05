@@ -1,10 +1,8 @@
-// Copyright FIRST, Red Hat, and contributors
-// SPDX-License-Identifier: BSD-2-Clause
 interface LookupType {
   [key: string]: number | undefined;
 };
 
-export function lookup(values: number[]): number | undefined {
+export function lookup(values: readonly number[]): number | undefined {
   return lookupTable[values.join("")]
 }
 
@@ -25,7 +23,7 @@ export const levels = {
   AR: { X: 0.0, H: 0.0, M: 0.1, L: 0.2 },
 }
 
-export const maxComposedEQ3: string[][][] = [
+export const maxComposedEQ3: readonly string[][][] = [
 	[ ["VC:H/VI:H/VA:H/CR:H/IR:H/AR:H/"], ["VC:H/VI:H/VA:L/CR:M/IR:M/AR:H/", "VC:H/VI:H/VA:H/CR:M/IR:M/AR:M/"] ],
 	[ ["VC:L/VI:H/VA:H/CR:H/IR:H/AR:H/", "VC:H/VI:L/VA:H/CR:H/IR:H/AR:H/"], ["VC:L/VI:H/VA:L/CR:H/IR:M/AR:H/", "VC:L/VI:H/VA:H/CR:H/IR:M/AR:M/", "VC:H/VI:L/VA:H/CR:M/IR:H/AR:M/", "VC:H/VI:L/VA:L/CR:M/IR:H/AR:H/", "VC:L/VI:L/VA:H/CR:H/IR:H/AR:M/"] ],
 	[ [], ["VC:L/VI:L/VA:L/CR:H/IR:H/AR:H/"] ],
@@ -37,7 +35,7 @@ export const maxSeverityeq3eq6: {[key in number]: number}[] = [
 	{ 1: 10 }
 ]
 
-export const maxSeverityData: number[][] = [
+export const maxSeverityData: readonly number[][] = [
 	[ 1, 4, 5 ],
 	[ 1, 2 ],
 	[],// stub for 3
@@ -46,7 +44,7 @@ export const maxSeverityData: number[][] = [
 ]
 
 
-export const maxComposed: string[][][] = [
+export const maxComposed: readonly string[][][] = [
 	// EQ1
 	[
 		 ["AV:N/PR:N/UI:N/"],

@@ -1,7 +1,7 @@
 {
   "name": "cvss-ts",
   "version": "1.0.0",
-  "description": "It is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)",
+  "description": "CVSS parser and calculator",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/unorsk/cvss-ts#readme",
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "^19.0.0-rc-4d577fd2-20241104",
+    "react-dom": "^19.0.0-rc-4d577fd2-20241104"
   }
 }

@@ -1,6 +1,6 @@
 ## CVSS implementation in TypeScript
 
- It is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
+ This is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
 
 
 ### Building the project
@@ -15,6 +15,10 @@ npm install
 npm run build
 ```
 
+Running tests
+```
+bun test
+```
 
 Supported versions
 - [ ] CVSS20

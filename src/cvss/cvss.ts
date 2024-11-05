@@ -7,7 +7,7 @@ import {
   levels,
 } from "./lookup";
 
-type CVSS40 = {
+interface CVSS40 {
   AV: "N" | "A" | "L" | "P";
   AC: "L" | "H";
   AT: "N" | "P";
@@ -42,7 +42,7 @@ type CVSS40 = {
   U: "X" | "Clear" | "Green" | "Amber" | "Red";
 };
 
-export function parseCVSS40(cvss40: string, skipPrefix = false): CVSS40 {
+export function parseCVSS40(cvss40: string, skipPrefix = false): Readonly<CVSS40> {
   cvss40 = cvss40.trim()
 
   if (!skipPrefix) {
@@ -54,7 +54,7 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): CVSS40 {
     cvss40 = cvss40.slice(0, -1)
   }
 
-  const metricsMap = new Map()
+  const metricsMap = new Map<string, string>()
   const rawMetrics = cvss40.split("/")
 
   for (let rawMetric of rawMetrics) {
@@ -71,47 +71,47 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): CVSS40 {
     }
   }
 
-  const extractValueMetric = function <T>(metric: string, cvssStr: string, constraint: string[]): T {
-    return extractValueMetricFromMap(metric, cvssStr, metricsMap, constraint)
+  const extractValueMetric = function <T>(metric: string, metrics: Map<string, string>, constraint: readonly string[]): T {
+    return extractValueMetricFromMap(metric, metrics, constraint)
   }
 
-  const extractValueMetricOptional = function <T>(metric: string, cvssStr: string, defaultValue: T, constraint: string[]): T {
-    return extractValueMetricOptionalFromMap(metric, cvssStr, defaultValue, metricsMap, constraint)
+  const extractValueMetricOptional = function <T>(metric: string, metrics: Map<string, string>, defaultValue: T, constraint: string[]): T {
+    return extractValueMetricOptionalFromMap(metric, metrics, defaultValue,  constraint)
   }
 
   const parsedCvss: CVSS40 = {
-    AV: extractValueMetric("AV", cvss40, ["N", "A", "L", "P"]),
-    AC: extractValueMetric("AC", cvss40, ["L", "H"]),
-    AT: extractValueMetric("AT", cvss40, ["N", "P"]),
-    PR: extractValueMetric("PR", cvss40, ["N", "L", "H"]),
-    UI: extractValueMetric("UI", cvss40, ["N", "P", "A"]),
-    VC: extractValueMetric("VC", cvss40, ["H", "L", "N"]),
-    VI: extractValueMetric("VI", cvss40, ["H", "L", "N"]),
-    VA: extractValueMetric("VA", cvss40, ["H", "L", "N"]),
-    SC: extractValueMetric("SC", cvss40, ["H", "L", "N"]),
-    SI: extractValueMetric("SI", cvss40, ["S", "H", "L", "N"]),
-    SA: extractValueMetric("SA", cvss40, ["S", "H", "L", "N"]),
-    E: extractValueMetricOptional("E", cvss40, "A", ["X", "A", "P", "U"]),
-    MAV: extractValueMetricOptional("MAV", cvss40, "X", ["X", "N", "A", "L", "P"]),
-    MAC: extractValueMetricOptional("MAC", cvss40, "X", ["X", "L", "H"]),
-    MAT: extractValueMetricOptional("MAT", cvss40, "X", ["X", "N", "P"]),
-    MPR: extractValueMetricOptional("MPR", cvss40, "X", ["X", "N", "L", "H"]),
-    MUI: extractValueMetricOptional("MUI", cvss40, "X", ["X", "N", "P", "A"]),
-    MVC: extractValueMetricOptional("MVC", cvss40, "X", ["X", "H", "L", "N"]),
-    MVI: extractValueMetricOptional("MVI", cvss40, "X", ["X", "H", "L", "N"]),
-    MVA: extractValueMetricOptional("MVA", cvss40, "X", ["X", "H", "L", "N"]),
-    MSC: extractValueMetricOptional("MSC", cvss40, "X", ["X", "H", "L", "N"]),
-    MSA: extractValueMetricOptional("MSA", cvss40, "X", ["X", "S", "H", "L", "N"]),
-    MSI: extractValueMetricOptional("MSI", cvss40, "X", ["X", "S", "H", "L", "N"]),
-    CR: extractValueMetricOptional("CR", cvss40, "H", ["X", "H", "M", "L"]),
-    IR: extractValueMetricOptional("IR", cvss40, "H", ["X", "H", "M", "L"]),
-    AR: extractValueMetricOptional("AR", cvss40, "H", ["X", "H", "M", "L"]),
-    S: extractValueMetricOptional("S", cvss40, "X", ["X", "N", "P"]),
-    AU: extractValueMetricOptional("AU", cvss40, "X", ["X", "N", "Y"]),
-    R: extractValueMetricOptional("R", cvss40, "X", ["X", "A", "U", "I"]),
-    V: extractValueMetricOptional("V", cvss40, "X", ["X", "D", "C"]),
-    RE: extractValueMetricOptional("RE", cvss40, "X", ["X", "L", "M", "H"]),
-    U: extractValueMetricOptional("U", cvss40, "X", ["X", "Clear", "Green", "Amber", "Red"]),
+    AV: extractValueMetric("AV", metricsMap, ["N", "A", "L", "P"]),
+    AC: extractValueMetric("AC", metricsMap, ["L", "H"]),
+    AT: extractValueMetric("AT", metricsMap, ["N", "P"]),
+    PR: extractValueMetric("PR", metricsMap, ["N", "L", "H"]),
+    UI: extractValueMetric("UI", metricsMap, ["N", "P", "A"]),
+    VC: extractValueMetric("VC", metricsMap, ["H", "L", "N"]),
+    VI: extractValueMetric("VI", metricsMap, ["H", "L", "N"]),
+    VA: extractValueMetric("VA", metricsMap, ["H", "L", "N"]),
+    SC: extractValueMetric("SC", metricsMap, ["H", "L", "N"]),
+    SI: extractValueMetric("SI", metricsMap, ["S", "H", "L", "N"]),
+    SA: extractValueMetric("SA", metricsMap, ["S", "H", "L", "N"]),
+    E: extractValueMetricOptional("E", metricsMap, "A", ["X", "A", "P", "U"]),
+    MAV: extractValueMetricOptional("MAV", metricsMap, "X", ["X", "N", "A", "L", "P"]),
+    MAC: extractValueMetricOptional("MAC", metricsMap, "X", ["X", "L", "H"]),
+    MAT: extractValueMetricOptional("MAT", metricsMap, "X", ["X", "N", "P"]),
+    MPR: extractValueMetricOptional("MPR", metricsMap, "X", ["X", "N", "L", "H"]),
+    MUI: extractValueMetricOptional("MUI", metricsMap, "X", ["X", "N", "P", "A"]),
+    MVC: extractValueMetricOptional("MVC", metricsMap, "X", ["X", "H", "L", "N"]),
+    MVI: extractValueMetricOptional("MVI", metricsMap, "X", ["X", "H", "L", "N"]),
+    MVA: extractValueMetricOptional("MVA", metricsMap, "X", ["X", "H", "L", "N"]),
+    MSC: extractValueMetricOptional("MSC", metricsMap, "X", ["X", "H", "L", "N"]),
+    MSA: extractValueMetricOptional("MSA", metricsMap, "X", ["X", "S", "H", "L", "N"]),
+    MSI: extractValueMetricOptional("MSI", metricsMap, "X", ["X", "S", "H", "L", "N"]),
+    CR: extractValueMetricOptional("CR", metricsMap, "H", ["X", "H", "M", "L"]),
+    IR: extractValueMetricOptional("IR", metricsMap, "H", ["X", "H", "M", "L"]),
+    AR: extractValueMetricOptional("AR", metricsMap, "H", ["X", "H", "M", "L"]),
+    S: extractValueMetricOptional("S", metricsMap, "X", ["X", "N", "P"]),
+    AU: extractValueMetricOptional("AU", metricsMap, "X", ["X", "N", "Y"]),
+    R: extractValueMetricOptional("R", metricsMap, "X", ["X", "A", "U", "I"]),
+    V: extractValueMetricOptional("V", metricsMap, "X", ["X", "D", "C"]),
+    RE: extractValueMetricOptional("RE", metricsMap, "X", ["X", "L", "M", "H"]),
+    U: extractValueMetricOptional("U", metricsMap, "X", ["X", "Clear", "Green", "Amber", "Red"]),
   }
 
   if (metricsMap.size > 0) {
@@ -125,7 +125,7 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): CVSS40 {
   return parsedCvss
 }
 
-export function cvss40score(cvss: CVSS40) {
+export function cvss40score(cvss: Readonly<CVSS40>) {
   const macroVectorResult: number[] = macroVector(cvss)
 
   const defaultMetrics = ["VC", "VI", "VA", "SC", "SI", "SA"]
@@ -242,8 +242,8 @@ function calcMaxVectors([eq1, eq2, eq3, eq4, eq5, eq6]: number[]): string[] {
 
 
 function getSeverities(
-  cvss: CVSS40,
-  max_vectors: string[],
+  cvss: Readonly<CVSS40>,
+  max_vectors: readonly string[],
 ): number[] | undefined {
   // Find the max vector to use i.e. one in the combination of all the highests
   // that is greater or equal (severity distance) than the to-be scored vector.
@@ -290,7 +290,7 @@ function getSeverities(
   }
 }
 
-function calcScoreEq3eq6NextLowerMacro(eq: number[]): number | undefined {
+function calcScoreEq3eq6NextLowerMacro(eq: readonly number[]): number | undefined {
   const [eq1, eq2, eq3, eq4, eq5, eq6] = eq;
 
   let eq3eq6NextLowerMacro;
@@ -325,7 +325,7 @@ function calcScoreEq3eq6NextLowerMacro(eq: number[]): number | undefined {
   return lookup(eq3eq6NextLowerMacro);
 }
 
-function extractValueMetricFromMap<T>(metric: string, cvssStr: string, metrics: Map<string, string>, constraint: string[]): T {
+function extractValueMetricFromMap<T>(metric: string, metrics: Map<string, string>, constraint: readonly string[]): T {
   // check if there is an overwriting M-metric for this metric.
   if (metrics.has(`M${metric}`)) {
     const r = metrics.get(`M${metric}`)!
@@ -350,7 +350,7 @@ function extractValueMetricFromMap<T>(metric: string, cvssStr: string, metrics: 
   throw `Metric '${metric}' is required`;
 }
 
-function extractValueMetricOptionalFromMap<T>(metric: string, cvssStr: string, defaultValue: T, metrics: Map<string, string>, constraint: string[]): T {
+function extractValueMetricOptionalFromMap<T>(metric: string, metrics: Map<string, string>, defaultValue: T, constraint: readonly string[]): T {
   // check if there is an overwriting M-metric for this metric.
   if (metrics.has(`M${metric}`)) {
     const r = metrics.get(`M${metric}`)!
