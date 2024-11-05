@@ -6,13 +6,12 @@
 ### Building the project
 
 Pre-requisites:
-- Node.js
 - Bun
 
 Build the project by running the following commands
 ```
-npm install
-npm run build
+bun install
+bun run build
 ```
 
 Running tests
