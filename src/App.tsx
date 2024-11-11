@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useActionState, } from 'react';
+// import {useActionState} from 'react-dom';
 import { cvss40score, parseCVSS40 } from './cvss/cvss';
 
 const App: React.FC = () => {
@@ -13,6 +14,14 @@ const App: React.FC = () => {
   useEffect(() => {
     calculateScore(cvssString);
   }, [cvssString])
+
+
+  const [state, formAction, _isPending] = useActionState((prev: {} | null, formData) => {
+    console.log(formData.get("cvssString"))
+
+    const a = prev;
+    return {}
+  }, null)
 
   const calculateScore = (value: string) => {
     try {
@@ -29,9 +38,12 @@ const App: React.FC = () => {
   return (
     <div>
       <h1>CVSS4.0 Calculator Demo</h1>
-      <textarea value={cvssString} onChange={handleInputChange} />
-      {error && <div>{error}</div>}
-      <div>Score: {score}</div>
+      <form>
+        <textarea value={cvssString} name="cvssString" onChange={handleInputChange} />
+        {/* <input type='text' value={cvssString}  formAction={formAction} /> */}
+        {error && <div>{error}</div>}
+        <div>Score: {score}</div>
+      </form>
     </div>
   );
 };

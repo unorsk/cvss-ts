@@ -299,14 +299,6 @@ var require_react_development = __commonJS((exports, module) => {
       var dispatcher = ReactSharedInternals.A;
       return dispatcher === null ? null : dispatcher.getOwner();
     }
-    function hasValidRef(config) {
-      if (hasOwnProperty.call(config, "ref")) {
-        var getter = Object.getOwnPropertyDescriptor(config, "ref").get;
-        if (getter && getter.isReactWarning)
-          return false;
-      }
-      return config.ref !== undefined;
-    }
     function hasValidKey(config) {
       if (hasOwnProperty.call(config, "key")) {
         var getter = Object.getOwnPropertyDescriptor(config, "key").get;
@@ -331,8 +323,8 @@ var require_react_development = __commonJS((exports, module) => {
       componentName = this.props.ref;
       return componentName !== undefined ? componentName : null;
     }
-    function ReactElement(type, key, _ref, self, source, owner, props) {
-      _ref = props.ref;
+    function ReactElement(type, key, self, source, owner, props) {
+      self = props.ref;
       type = {
         $$typeof: REACT_ELEMENT_TYPE,
         type,
@@ -340,7 +332,7 @@ var require_react_development = __commonJS((exports, module) => {
         props,
         _owner: owner
       };
-      (_ref !== undefined ? _ref : null) !== null ? Object.defineProperty(type, "ref", {
+      (self !== undefined ? self : null) !== null ? Object.defineProperty(type, "ref", {
         enumerable: false,
         get: elementRefGetterWithDeprecationWarning
       }) : Object.defineProperty(type, "ref", { enumerable: false, value: null });
@@ -361,7 +353,7 @@ var require_react_development = __commonJS((exports, module) => {
       return type;
     }
     function cloneAndReplaceKey(oldElement, newKey) {
-      newKey = ReactElement(oldElement.type, newKey, null, undefined, undefined, oldElement._owner, oldElement.props);
+      newKey = ReactElement(oldElement.type, newKey, undefined, undefined, oldElement._owner, oldElement.props);
       newKey._store.validated = oldElement._store.validated;
       return newKey;
     }
@@ -765,18 +757,30 @@ var require_react_development = __commonJS((exports, module) => {
       if (element === null || element === undefined)
         throw Error("The argument must be a React element, but you passed " + element + ".");
       var props = assign({}, element.props), key = element.key, owner = element._owner;
-      if (config != null)
-        for (propName in hasValidRef(config) && (owner = getOwner()), hasValidKey(config) && (checkKeyStringCoercion(config.key), key = "" + config.key), config)
+      if (config != null) {
+        var JSCompiler_inline_result;
+        a: {
+          if (hasOwnProperty.call(config, "ref") && (JSCompiler_inline_result = Object.getOwnPropertyDescriptor(config, "ref").get) && JSCompiler_inline_result.isReactWarning) {
+            JSCompiler_inline_result = false;
+            break a;
+          }
+          JSCompiler_inline_result = config.ref !== undefined;
+        }
+        JSCompiler_inline_result && (owner = getOwner());
+        hasValidKey(config) && (checkKeyStringCoercion(config.key), key = "" + config.key);
+        for (propName in config)
           !hasOwnProperty.call(config, propName) || propName === "key" || propName === "__self" || propName === "__source" || propName === "ref" && config.ref === undefined || (props[propName] = config[propName]);
+      }
       var propName = arguments.length - 2;
       if (propName === 1)
         props.children = children;
       else if (1 < propName) {
-        for (var childArray = Array(propName), i = 0;i < propName; i++)
-          childArray[i] = arguments[i + 2];
-        props.children = childArray;
+        JSCompiler_inline_result = Array(propName);
+        for (var i = 0;i < propName; i++)
+          JSCompiler_inline_result[i] = arguments[i + 2];
+        props.children = JSCompiler_inline_result;
       }
-      props = ReactElement(element.type, key, null, undefined, undefined, owner, props);
+      props = ReactElement(element.type, key, undefined, undefined, owner, props);
       for (key = 2;key < arguments.length; key++)
         validateChildKeys(arguments[key], props.type);
       return props;
@@ -813,10 +817,11 @@ var require_react_development = __commonJS((exports, module) => {
           isArrayImpl(type) ? typeString = "array" : type !== undefined && type.$$typeof === REACT_ELEMENT_TYPE ? (typeString = "<" + (getComponentNameFromType(type.type) || "Unknown") + " />", i = " Did you accidentally export a JSX literal instead of a component?") : typeString = typeof type;
         console.error("React.createElement: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: %s.%s", typeString, i);
       }
+      var propName;
       i = {};
       typeString = null;
       if (config != null)
-        for (propName in didWarnAboutOldJSXRuntime || !("__self" in config) || "key" in config || (didWarnAboutOldJSXRuntime = true, console.warn("Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform")), hasValidRef(config), hasValidKey(config) && (checkKeyStringCoercion(config.key), typeString = "" + config.key), config)
+        for (propName in didWarnAboutOldJSXRuntime || !("__self" in config) || "key" in config || (didWarnAboutOldJSXRuntime = true, console.warn("Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform")), hasValidKey(config) && (checkKeyStringCoercion(config.key), typeString = "" + config.key), config)
           hasOwnProperty.call(config, propName) && propName !== "key" && propName !== "__self" && propName !== "__source" && (i[propName] = config[propName]);
       var childrenLength = arguments.length - 2;
       if (childrenLength === 1)
@@ -830,11 +835,8 @@ var require_react_development = __commonJS((exports, module) => {
       if (type && type.defaultProps)
         for (propName in childrenLength = type.defaultProps, childrenLength)
           i[propName] === undefined && (i[propName] = childrenLength[propName]);
-      if (typeString) {
-        var propName = typeof type === "function" ? type.displayName || type.name || "Unknown" : type;
-        typeString && defineKeyPropWarningGetter(i, propName);
-      }
-      return ReactElement(type, typeString, null, undefined, undefined, getOwner(), i);
+      typeString && defineKeyPropWarningGetter(i, typeof type === "function" ? type.displayName || type.name || "Unknown" : type);
+      return ReactElement(type, typeString, undefined, undefined, getOwner(), i);
     };
     exports.createRef = function() {
       var refObject = { current: null };
@@ -960,7 +962,7 @@ var require_react_development = __commonJS((exports, module) => {
     exports.useTransition = function() {
       return resolveDispatcher().useTransition();
     };
-    exports.version = "19.0.0-rc-4d577fd2-20241104";
+    exports.version = "19.0.0-rc-5c56b873-20241107";
     typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
   })();
 });
@@ -1422,7 +1424,7 @@ var require_react_dom_development = __commonJS((exports) => {
     exports.useFormStatus = function() {
       return resolveDispatcher().useHostTransitionStatus();
     };
-    exports.version = "19.0.0-rc-4d577fd2-20241104";
+    exports.version = "19.0.0-rc-5c56b873-20241107";
     typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
   })();
 });
@@ -4232,9 +4234,9 @@ var require_react_dom_client_development = __commonJS((exports) => {
       thenableState$1 === null && (thenableState$1 = createThenableState());
       return trackUsedThenable(thenableState$1, thenable, index);
     }
-    function coerceRef(returnFiber, current2, workInProgress2, element) {
-      returnFiber = element.props.ref;
-      workInProgress2.ref = returnFiber !== undefined ? returnFiber : null;
+    function coerceRef(workInProgress2, element) {
+      element = element.props.ref;
+      workInProgress2.ref = element !== undefined ? element : null;
     }
     function throwOnInvalidObjectType(returnFiber, newChild) {
       if (newChild.$$typeof === REACT_LEGACY_ELEMENT_TYPE)
@@ -4302,12 +4304,12 @@ var require_react_dom_client_development = __commonJS((exports) => {
         if (elementType === REACT_FRAGMENT_TYPE)
           return current2 = updateFragment(returnFiber, current2, element.props.children, lanes, element.key), validateFragmentProps(element, current2, returnFiber), current2;
         if (current2 !== null && (current2.elementType === elementType || isCompatibleFamilyForHotReloading(current2, element) || typeof elementType === "object" && elementType !== null && elementType.$$typeof === REACT_LAZY_TYPE && callLazyInitInDEV(elementType) === current2.type))
-          return lanes = useFiber(current2, element.props), coerceRef(returnFiber, current2, lanes, element), lanes.return = returnFiber, lanes._debugOwner = element._owner, lanes._debugInfo = currentDebugInfo, lanes;
-        lanes = createFiberFromElement(element, returnFiber.mode, lanes);
-        coerceRef(returnFiber, current2, lanes, element);
-        lanes.return = returnFiber;
-        lanes._debugInfo = currentDebugInfo;
-        return lanes;
+          return current2 = useFiber(current2, element.props), coerceRef(current2, element), current2.return = returnFiber, current2._debugOwner = element._owner, current2._debugInfo = currentDebugInfo, current2;
+        current2 = createFiberFromElement(element, returnFiber.mode, lanes);
+        coerceRef(current2, element);
+        current2.return = returnFiber;
+        current2._debugInfo = currentDebugInfo;
+        return current2;
       }
       function updatePortal(returnFiber, current2, portal, lanes) {
         if (current2 === null || current2.tag !== 4 || current2.stateNode.containerInfo !== portal.containerInfo || current2.stateNode.implementation !== portal.implementation)
@@ -4331,7 +4333,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
         if (typeof newChild === "object" && newChild !== null) {
           switch (newChild.$$typeof) {
             case REACT_ELEMENT_TYPE:
-              return lanes = createFiberFromElement(newChild, returnFiber.mode, lanes), coerceRef(returnFiber, null, lanes, newChild), lanes.return = returnFiber, returnFiber = pushDebugInfo(newChild._debugInfo), lanes._debugInfo = currentDebugInfo, currentDebugInfo = returnFiber, lanes;
+              return lanes = createFiberFromElement(newChild, returnFiber.mode, lanes), coerceRef(lanes, newChild), lanes.return = returnFiber, returnFiber = pushDebugInfo(newChild._debugInfo), lanes._debugInfo = currentDebugInfo, currentDebugInfo = returnFiber, lanes;
             case REACT_PORTAL_TYPE:
               return newChild = createFiberFromPortal(newChild, returnFiber.mode, lanes), newChild.return = returnFiber, newChild._debugInfo = currentDebugInfo, newChild;
             case REACT_LAZY_TYPE:
@@ -4511,37 +4513,37 @@ var require_react_dom_client_development = __commonJS((exports) => {
             case REACT_ELEMENT_TYPE:
               var prevDebugInfo = pushDebugInfo(newChild._debugInfo);
               a: {
-                for (var key = newChild.key, child = currentFirstChild;child !== null; ) {
-                  if (child.key === key) {
+                for (var key = newChild.key;currentFirstChild !== null; ) {
+                  if (currentFirstChild.key === key) {
                     key = newChild.type;
                     if (key === REACT_FRAGMENT_TYPE) {
-                      if (child.tag === 7) {
-                        deleteRemainingChildren(returnFiber, child.sibling);
-                        currentFirstChild = useFiber(child, newChild.props.children);
-                        currentFirstChild.return = returnFiber;
-                        currentFirstChild._debugOwner = newChild._owner;
-                        currentFirstChild._debugInfo = currentDebugInfo;
-                        validateFragmentProps(newChild, currentFirstChild, returnFiber);
-                        returnFiber = currentFirstChild;
+                      if (currentFirstChild.tag === 7) {
+                        deleteRemainingChildren(returnFiber, currentFirstChild.sibling);
+                        lanes = useFiber(currentFirstChild, newChild.props.children);
+                        lanes.return = returnFiber;
+                        lanes._debugOwner = newChild._owner;
+                        lanes._debugInfo = currentDebugInfo;
+                        validateFragmentProps(newChild, lanes, returnFiber);
+                        returnFiber = lanes;
                         break a;
                       }
-                    } else if (child.elementType === key || isCompatibleFamilyForHotReloading(child, newChild) || typeof key === "object" && key !== null && key.$$typeof === REACT_LAZY_TYPE && callLazyInitInDEV(key) === child.type) {
-                      deleteRemainingChildren(returnFiber, child.sibling);
-                      currentFirstChild = useFiber(child, newChild.props);
-                      coerceRef(returnFiber, child, currentFirstChild, newChild);
-                      currentFirstChild.return = returnFiber;
-                      currentFirstChild._debugOwner = newChild._owner;
-                      currentFirstChild._debugInfo = currentDebugInfo;
-                      returnFiber = currentFirstChild;
+                    } else if (currentFirstChild.elementType === key || isCompatibleFamilyForHotReloading(currentFirstChild, newChild) || typeof key === "object" && key !== null && key.$$typeof === REACT_LAZY_TYPE && callLazyInitInDEV(key) === currentFirstChild.type) {
+                      deleteRemainingChildren(returnFiber, currentFirstChild.sibling);
+                      lanes = useFiber(currentFirstChild, newChild.props);
+                      coerceRef(lanes, newChild);
+                      lanes.return = returnFiber;
+                      lanes._debugOwner = newChild._owner;
+                      lanes._debugInfo = currentDebugInfo;
+                      returnFiber = lanes;
                       break a;
                     }
-                    deleteRemainingChildren(returnFiber, child);
+                    deleteRemainingChildren(returnFiber, currentFirstChild);
                     break;
                   } else
-                    deleteChild(returnFiber, child);
-                  child = child.sibling;
+                    deleteChild(returnFiber, currentFirstChild);
+                  currentFirstChild = currentFirstChild.sibling;
                 }
-                newChild.type === REACT_FRAGMENT_TYPE ? (currentFirstChild = createFiberFromFragment(newChild.props.children, returnFiber.mode, lanes, newChild.key), currentFirstChild.return = returnFiber, currentFirstChild._debugOwner = returnFiber, currentFirstChild._debugInfo = currentDebugInfo, validateFragmentProps(newChild, currentFirstChild, returnFiber), returnFiber = currentFirstChild) : (lanes = createFiberFromElement(newChild, returnFiber.mode, lanes), coerceRef(returnFiber, currentFirstChild, lanes, newChild), lanes.return = returnFiber, lanes._debugInfo = currentDebugInfo, returnFiber = lanes);
+                newChild.type === REACT_FRAGMENT_TYPE ? (lanes = createFiberFromFragment(newChild.props.children, returnFiber.mode, lanes, newChild.key), lanes.return = returnFiber, lanes._debugOwner = returnFiber, lanes._debugInfo = currentDebugInfo, validateFragmentProps(newChild, lanes, returnFiber), returnFiber = lanes) : (lanes = createFiberFromElement(newChild, returnFiber.mode, lanes), coerceRef(lanes, newChild), lanes.return = returnFiber, lanes._debugInfo = currentDebugInfo, returnFiber = lanes);
               }
               returnFiber = placeSingleChild(returnFiber);
               currentDebugInfo = prevDebugInfo;
@@ -4553,9 +4555,9 @@ var require_react_dom_client_development = __commonJS((exports) => {
                   if (currentFirstChild.key === newChild)
                     if (currentFirstChild.tag === 4 && currentFirstChild.stateNode.containerInfo === prevDebugInfo.containerInfo && currentFirstChild.stateNode.implementation === prevDebugInfo.implementation) {
                       deleteRemainingChildren(returnFiber, currentFirstChild.sibling);
-                      currentFirstChild = useFiber(currentFirstChild, prevDebugInfo.children || []);
-                      currentFirstChild.return = returnFiber;
-                      returnFiber = currentFirstChild;
+                      lanes = useFiber(currentFirstChild, prevDebugInfo.children || []);
+                      lanes.return = returnFiber;
+                      returnFiber = lanes;
                       break a;
                     } else {
                       deleteRemainingChildren(returnFiber, currentFirstChild);
@@ -4565,9 +4567,9 @@ var require_react_dom_client_development = __commonJS((exports) => {
                     deleteChild(returnFiber, currentFirstChild);
                   currentFirstChild = currentFirstChild.sibling;
                 }
-                currentFirstChild = createFiberFromPortal(prevDebugInfo, returnFiber.mode, lanes);
-                currentFirstChild.return = returnFiber;
-                returnFiber = currentFirstChild;
+                lanes = createFiberFromPortal(prevDebugInfo, returnFiber.mode, lanes);
+                lanes.return = returnFiber;
+                returnFiber = lanes;
               }
               return placeSingleChild(returnFiber);
             case REACT_LAZY_TYPE:
@@ -4577,16 +4579,16 @@ var require_react_dom_client_development = __commonJS((exports) => {
             return prevDebugInfo = pushDebugInfo(newChild._debugInfo), returnFiber = reconcileChildrenArray(returnFiber, currentFirstChild, newChild, lanes), currentDebugInfo = prevDebugInfo, returnFiber;
           if (getIteratorFn(newChild)) {
             prevDebugInfo = pushDebugInfo(newChild._debugInfo);
-            child = getIteratorFn(newChild);
-            if (typeof child !== "function")
+            key = getIteratorFn(newChild);
+            if (typeof key !== "function")
               throw Error("An object is not an iterable. This error is likely caused by a bug in React. Please file an issue.");
-            key = child.call(newChild);
-            if (key === newChild) {
-              if (returnFiber.tag !== 0 || Object.prototype.toString.call(returnFiber.type) !== "[object GeneratorFunction]" || Object.prototype.toString.call(key) !== "[object Generator]")
+            var newChildren = key.call(newChild);
+            if (newChildren === newChild) {
+              if (returnFiber.tag !== 0 || Object.prototype.toString.call(returnFiber.type) !== "[object GeneratorFunction]" || Object.prototype.toString.call(newChildren) !== "[object Generator]")
                 didWarnAboutGenerators || console.error("Using Iterators as children is unsupported and will likely yield unexpected results because enumerating a generator mutates it. You may convert it to an array with `Array.from()` or the `[...spread]` operator before rendering. You can also use an Iterable that can iterate multiple times over the same items."), didWarnAboutGenerators = true;
             } else
-              newChild.entries !== child || didWarnAboutMaps || (console.error("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), didWarnAboutMaps = true);
-            returnFiber = reconcileChildrenIterator(returnFiber, currentFirstChild, key, lanes);
+              newChild.entries !== key || didWarnAboutMaps || (console.error("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), didWarnAboutMaps = true);
+            returnFiber = reconcileChildrenIterator(returnFiber, currentFirstChild, newChildren, lanes);
             currentDebugInfo = prevDebugInfo;
             return returnFiber;
           }
@@ -4597,7 +4599,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
           throwOnInvalidObjectType(returnFiber, newChild);
         }
         if (typeof newChild === "string" && newChild !== "" || typeof newChild === "number" || typeof newChild === "bigint")
-          return prevDebugInfo = "" + newChild, currentFirstChild !== null && currentFirstChild.tag === 6 ? (deleteRemainingChildren(returnFiber, currentFirstChild.sibling), currentFirstChild = useFiber(currentFirstChild, prevDebugInfo), currentFirstChild.return = returnFiber, returnFiber = currentFirstChild) : (deleteRemainingChildren(returnFiber, currentFirstChild), currentFirstChild = createFiberFromText(prevDebugInfo, returnFiber.mode, lanes), currentFirstChild.return = returnFiber, currentFirstChild._debugOwner = returnFiber, currentFirstChild._debugInfo = currentDebugInfo, returnFiber = currentFirstChild), placeSingleChild(returnFiber);
+          return prevDebugInfo = "" + newChild, currentFirstChild !== null && currentFirstChild.tag === 6 ? (deleteRemainingChildren(returnFiber, currentFirstChild.sibling), lanes = useFiber(currentFirstChild, prevDebugInfo), lanes.return = returnFiber, returnFiber = lanes) : (deleteRemainingChildren(returnFiber, currentFirstChild), lanes = createFiberFromText(prevDebugInfo, returnFiber.mode, lanes), lanes.return = returnFiber, lanes._debugOwner = returnFiber, lanes._debugInfo = currentDebugInfo, returnFiber = lanes), placeSingleChild(returnFiber);
         typeof newChild === "function" && warnOnFunctionType(returnFiber, newChild);
         typeof newChild === "symbol" && warnOnSymbolType(returnFiber, newChild);
         return deleteRemainingChildren(returnFiber, currentFirstChild);
@@ -6876,7 +6878,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
       throw Error("Unknown unit of work tag (" + workInProgress2.tag + "). This error is likely caused by a bug in React. Please file an issue.");
     }
     function resetContextDependencies() {
-      lastFullyObservedContext = lastContextDependency = currentlyRenderingFiber = null;
+      lastContextDependency = currentlyRenderingFiber = null;
       isDisallowedContextReadInDEV = false;
     }
     function pushProvider(providerFiber, context, nextValue) {
@@ -6995,7 +6997,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
     }
     function prepareToReadContext(workInProgress2) {
       currentlyRenderingFiber = workInProgress2;
-      lastFullyObservedContext = lastContextDependency = null;
+      lastContextDependency = null;
       workInProgress2 = workInProgress2.dependencies;
       workInProgress2 !== null && (workInProgress2.firstContext = null);
     }
@@ -7009,19 +7011,19 @@ var require_react_dom_client_development = __commonJS((exports) => {
     }
     function readContextForConsumer(consumer, context) {
       var value = context._currentValue;
-      if (lastFullyObservedContext !== context)
-        if (context = { context, memoizedValue: value, next: null }, lastContextDependency === null) {
-          if (consumer === null)
-            throw Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
-          lastContextDependency = context;
-          consumer.dependencies = {
-            lanes: 0,
-            firstContext: context,
-            _debugThenableState: null
-          };
-          consumer.flags |= 524288;
-        } else
-          lastContextDependency = lastContextDependency.next = context;
+      context = { context, memoizedValue: value, next: null };
+      if (lastContextDependency === null) {
+        if (consumer === null)
+          throw Error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
+        lastContextDependency = context;
+        consumer.dependencies = {
+          lanes: 0,
+          firstContext: context,
+          _debugThenableState: null
+        };
+        consumer.flags |= 524288;
+      } else
+        lastContextDependency = lastContextDependency.next = context;
       return value;
     }
     function initializeUpdateQueue(fiber) {
@@ -15027,7 +15029,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
     }, hasWarnedAboutUsingNoValuePropOnContextProvider = false, valueCursor = createCursor(null);
     var rendererCursorDEV = createCursor(null);
     var rendererSigil = {};
-    var currentlyRenderingFiber = null, lastContextDependency = null, lastFullyObservedContext = null, isDisallowedContextReadInDEV = false, UpdateState = 0, ReplaceState = 1, ForceUpdate = 2, CaptureUpdate = 3, hasForceUpdate = false;
+    var currentlyRenderingFiber = null, lastContextDependency = null, isDisallowedContextReadInDEV = false, UpdateState = 0, ReplaceState = 1, ForceUpdate = 2, CaptureUpdate = 3, hasForceUpdate = false;
     var didWarnUpdateInsideUpdate = false;
     var currentlyProcessingQueue = null;
     var didReadFromEntangledAsyncAction = false, didWarnAboutUndefinedSnapshotBeforeUpdate = null;
@@ -15325,8 +15327,8 @@ var require_react_dom_client_development = __commonJS((exports) => {
     };
     (function() {
       var isomorphicReactPackageVersion = React.version;
-      if (isomorphicReactPackageVersion !== "19.0.0-rc-4d577fd2-20241104")
-        throw Error('Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.0.0-rc-4d577fd2-20241104\nLearn more: https://react.dev/warnings/version-mismatch"));
+      if (isomorphicReactPackageVersion !== "19.0.0-rc-5c56b873-20241107")
+        throw Error('Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:\n  - react:      ' + (isomorphicReactPackageVersion + "\n  - react-dom:  19.0.0-rc-5c56b873-20241107\nLearn more: https://react.dev/warnings/version-mismatch"));
     })();
     typeof Map === "function" && Map.prototype != null && typeof Map.prototype.forEach === "function" && typeof Set === "function" && Set.prototype != null && typeof Set.prototype.clear === "function" && typeof Set.prototype.forEach === "function" || console.error("React depends on Map and Set built-in types. Make sure that you load a polyfill in older browsers. https://react.dev/link/react-polyfills");
     ReactDOMSharedInternals.findDOMNode = function(componentOrElement) {
@@ -15345,11 +15347,11 @@ var require_react_dom_client_development = __commonJS((exports) => {
     if (!function() {
       var internals = {
         bundleType: 1,
-        version: "19.0.0-rc-4d577fd2-20241104",
+        version: "19.0.0-rc-5c56b873-20241107",
         rendererPackageName: "react-dom",
         currentDispatcherRef: ReactSharedInternals,
         findFiberByHostInstance: getClosestInstanceFromNode,
-        reconcilerVersion: "19.0.0-rc-4d577fd2-20241104"
+        reconcilerVersion: "19.0.0-rc-5c56b873-20241107"
       };
       internals.overrideHookState = overrideHookState;
       internals.overrideHookStateDeletePath = overrideHookStateDeletePath;
@@ -15403,7 +15405,7 @@ var require_react_dom_client_development = __commonJS((exports) => {
       listenToAllSupportedEvents(container);
       return new ReactDOMHydrationRoot(initialChildren);
     };
-    exports.version = "19.0.0-rc-4d577fd2-20241104";
+    exports.version = "19.0.0-rc-5c56b873-20241107";
     typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== "undefined" && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop === "function" && __REACT_DEVTOOLS_GLOBAL_HOOK__.registerInternalModuleStop(Error());
   })();
 });
@@ -15666,14 +15668,6 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
       var dispatcher = ReactSharedInternals.A;
       return dispatcher === null ? null : dispatcher.getOwner();
     }
-    function hasValidRef(config) {
-      if (hasOwnProperty.call(config, "ref")) {
-        var getter = Object.getOwnPropertyDescriptor(config, "ref").get;
-        if (getter && getter.isReactWarning)
-          return false;
-      }
-      return config.ref !== undefined;
-    }
     function hasValidKey(config) {
       if (hasOwnProperty.call(config, "key")) {
         var getter = Object.getOwnPropertyDescriptor(config, "key").get;
@@ -15698,8 +15692,8 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
       componentName = this.props.ref;
       return componentName !== undefined ? componentName : null;
     }
-    function ReactElement(type, key, _ref, self, source, owner, props) {
-      _ref = props.ref;
+    function ReactElement(type, key, self, source, owner, props) {
+      self = props.ref;
       type = {
         $$typeof: REACT_ELEMENT_TYPE,
         type,
@@ -15707,7 +15701,7 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
         props,
         _owner: owner
       };
-      (_ref !== undefined ? _ref : null) !== null ? Object.defineProperty(type, "ref", {
+      (self !== undefined ? self : null) !== null ? Object.defineProperty(type, "ref", {
         enumerable: false,
         get: elementRefGetterWithDeprecationWarning
       }) : Object.defineProperty(type, "ref", { enumerable: false, value: null });
@@ -15758,15 +15752,14 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
       children = null;
       maybeKey !== undefined && (checkKeyStringCoercion(maybeKey), children = "" + maybeKey);
       hasValidKey(config) && (checkKeyStringCoercion(config.key), children = "" + config.key);
-      hasValidRef(config);
       if ("key" in config) {
         maybeKey = {};
         for (var propName in config)
           propName !== "key" && (maybeKey[propName] = config[propName]);
       } else
         maybeKey = config;
-      children && (config = typeof type === "function" ? type.displayName || type.name || "Unknown" : type, children && defineKeyPropWarningGetter(maybeKey, config));
-      return ReactElement(type, children, null, self, source, getOwner(), maybeKey);
+      children && defineKeyPropWarningGetter(maybeKey, typeof type === "function" ? type.displayName || type.name || "Unknown" : type);
+      return ReactElement(type, children, self, source, getOwner(), maybeKey);
     }
     function validateChildKeys(node, parentType) {
       if (typeof node === "object" && node && node.$$typeof !== REACT_CLIENT_REFERENCE) {
@@ -16461,6 +16454,11 @@ var App = () => {
   import_react.useEffect(() => {
     calculateScore(cvssString);
   }, [cvssString]);
+  const [state, formAction, _isPending] = import_react.useActionState((prev, formData) => {
+    console.log(formData.get("cvssString"));
+    const a = prev;
+    return {};
+  }, null);
   const calculateScore = (value) => {
     try {
       const calculatedScore = cvss40score(parseCVSS40(value));
@@ -16476,17 +16474,22 @@ var App = () => {
       /* @__PURE__ */ jsx_dev_runtime.jsxDEV("h1", {
         children: "CVSS4.0 Calculator Demo"
       }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("textarea", {
-        value: cvssString,
-        onChange: handleInputChange
-      }, undefined, false, undefined, this),
-      error && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
-        children: error
-      }, undefined, false, undefined, this),
-      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+      /* @__PURE__ */ jsx_dev_runtime.jsxDEV("form", {
         children: [
-          "Score: ",
-          score
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("textarea", {
+            value: cvssString,
+            name: "cvssString",
+            onChange: handleInputChange
+          }, undefined, false, undefined, this),
+          error && /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            children: error
+          }, undefined, false, undefined, this),
+          /* @__PURE__ */ jsx_dev_runtime.jsxDEV("div", {
+            children: [
+              "Score: ",
+              score
+            ]
+          }, undefined, true, undefined, this)
         ]
       }, undefined, true, undefined, this)
     ]
