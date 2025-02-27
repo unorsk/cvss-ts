@@ -1,0 +1,21 @@
+{
+  "name": "api",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch index.ts",
+    "build": "bun build index.ts --target bun --outdir ./dist",
+    "start": "NODE_ENV=production bun dist/index.js"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.2.0",
+    "@elysiajs/eden": "^1.2.0",
+    "@elysiajs/swagger": "^1.2.2",
+    "cvss-lib": "link:cvss-lib",
+    "elysia": "^1.2.22",
+    "typescript": "^5"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.2.4"
+  }
+}

@@ -1,6 +1,6 @@
-## CVSS implementation in TypeScript
+## This used to be a CVSS implementation in TypeScript but not it's just a playground
 
- This is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
+This is based off the reference implementation at [https://github.com/RedHatProductSecurity/cvss-v4-calculator](cvss-v4-calculator)
 
 
 ### Building the project
@@ -8,7 +8,7 @@
 Pre-requisites:
 - Bun
 
-Build the project by running the following commands
+Build all the projects by running the following commands
 ```
 bun install
 bun run build

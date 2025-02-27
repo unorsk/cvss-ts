@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es2022",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@backend": [
+        "./api"
+      ],
+      "@backend/*": [
+        "./api/*"
+      ],
+      "@frontend": [
+        "./frontend/src"
+      ],
+      "@frontend/*": [
+        "./frontend/src/*"
+      ]
+    }
+  }
+}

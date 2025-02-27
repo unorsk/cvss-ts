@@ -1,4 +1,4 @@
-import { cvss40score, parseCVSS40 } from "../src/cvss/cvss"
+import { cvss40score, parseCVSS40 } from "../src/cvss"
 
 const testAssertions = [
   {cvss: "CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N", score: 7.3},
