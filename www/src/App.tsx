@@ -1,63 +1,49 @@
-import React, { useEffect, useActionState, } from 'react';
+import React, { useEffect } from 'react';
 
-import APIClient from "./api"
-// import {useActionState} from 'react-dom';
-// import { cvss40score, parseCVSS40 } from './cvss/cvss';
+import APIClient from "./api/api"
+import { useStore, type CVSSState } from './hooks/useStore';
 
 const App: React.FC = () => {
-  const [cvssString, setCvssString] = React.useState('CVSS:4.0/AV:L/AC:L/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N');
-  const [score, setScore] = React.useState(0);
-  const [error, setError] = React.useState('');
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-
-    try {
-      APIClient.parse[''].post({cvss: event.target.value}).then((a) => {
-
-        console.log(a);
-      });
-    } catch (e) {
-      console.log(e);
-    }
-
-    setCvssString(event.target.value);
-  };
+  const { cvss, updateCVSS, updateScore } = useStore<CVSSState>(state => state);
+  const [error, setError] = React.useState<string | undefined>(undefined);
 
   useEffect(() => {
-    calculateScore(cvssString);
-  }, [cvssString])
+    recalculateScore(cvss);
+  }, [cvss])
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateCVSS(event.target.value);
+  }
 
-  const [state, formAction, _isPending] = useActionState((prev: {} | null, formData) => {
-    console.log(formData.get("cvssString"))
+  const recalculateScore = async (cvssString: string) => {
+    setError(undefined);
+    updateCVSS(cvssString);
 
-    const a = prev;
-    return {}
-  }, null)
+    const { data: score, error } = await APIClient.score.post({ cvss: cvssString });
 
-  const calculateScore = (value: string) => {
-    try {
-      // Perform CVSS calculation logic here
-      const calculatedScore = 1;//cvss40score(parseCVSS40(value));
-      setScore(calculatedScore);
-      setError('');
-    } catch (error) {
-      setScore(0);
-      setError("" + error);
+    if (score) {
+      updateScore(score)
     }
-  };
+    if (error) {
+      setError(error.value as string)
+    }
+  }
 
   return (
     <div>
       <h1>CVSS4.0 Calculator Demo</h1>
       <form>
-        <textarea value={cvssString} name="cvssString" onChange={handleInputChange} />
-        {/* <input type='text' value={cvssString}  formAction={formAction} /> */}
+        <textarea value={cvss} name="cvssString" onChange={handleInputChange} />
         {error && <div>{error}</div>}
-        <div>Score: {score}</div>
+        {!error && <ScoreComponent />}
       </form>
     </div>
   );
 };
+
+const ScoreComponent: React.FC = () => {
+  const score = useStore((state) => state.score);
+  return <div>{score}</div>;
+}
 
 export default App;

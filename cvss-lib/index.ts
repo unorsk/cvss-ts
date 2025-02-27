@@ -1,6 +1,6 @@
-import { cvss40score, parseCVSS40 } from "./src/cvss"
+import { scoreCVSS40, parseCVSS40 } from "./src/cvss"
 
 export {
-  cvss40score,
+  scoreCVSS40,
   parseCVSS40
 };

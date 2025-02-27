@@ -60,7 +60,7 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): Readonly<CVSS40
   for (let rawMetric of rawMetrics) {
     const metricAndValue = rawMetric.split(":")
     if (metricAndValue.length != 2) {
-      
+
       throw `Invalid metric ${rawMetric} ${metricAndValue}`
     } else {
       if (metricsMap.has(metricAndValue[0])) {
@@ -76,7 +76,7 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): Readonly<CVSS40
   }
 
   const extractValueMetricOptional = function <T>(metric: string, metrics: Map<string, string>, defaultValue: T, constraint: string[]): T {
-    return extractValueMetricOptionalFromMap(metric, metrics, defaultValue,  constraint)
+    return extractValueMetricOptionalFromMap(metric, metrics, defaultValue, constraint)
   }
 
   const parsedCvss: CVSS40 = {
@@ -125,7 +125,7 @@ export function parseCVSS40(cvss40: string, skipPrefix = false): Readonly<CVSS40
   return parsedCvss
 }
 
-export function cvss40score(cvss: Readonly<CVSS40>) {
+export function scoreCVSS40(cvss: Readonly<CVSS40>): number {
   const macroVectorResult: number[] = macroVector(cvss)
 
   const defaultMetrics = ["VC", "VI", "VA", "SC", "SI", "SA"]

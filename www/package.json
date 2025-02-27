@@ -31,7 +31,6 @@
   },
   "homepage": "https://github.com/unorsk/cvss-ts#readme",
   "dependencies": {
-    "typescript": "^5",
     "@elysiajs/eden": "^1.1.9",
     "@elysiajs/static": "^1.2.0",
     "@types/react": "^19.0.0-rc.1",
@@ -39,7 +38,9 @@
     "api": "link:api",
     "elysia": "^1.2.22",
     "react": "^19.0.0-rc-5c56b873-20241107",
-    "react-dom": "^19.0.0-rc-5c56b873-20241107"
+    "react-dom": "^19.0.0-rc-5c56b873-20241107",
+    "typescript": "^5",
+    "zustand": "^5.0.3"
   },
   "overrides": {
     "@types/react": "npm:types-react@rc",
